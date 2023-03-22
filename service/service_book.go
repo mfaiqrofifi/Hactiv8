@@ -28,3 +28,14 @@ func AllBook() ([]domain.BookDomain, error) {
 	}
 	return domain.Books, nil
 }
+func UpdateBook(idBook string, data domain.BookDomain) (string, error) {
+	data.BookId = idBook
+	for i, v := range domain.Books {
+		if v.BookId == idBook {
+			domain.Books[i] = data
+			s := fmt.Sprintf("data %s has been updated", idBook)
+			return s, nil
+		}
+	}
+	return "", errors.New("Can't find the data")
+}
