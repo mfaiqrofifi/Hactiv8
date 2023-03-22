@@ -70,3 +70,18 @@ func UpdateBook(ctx *gin.Context) {
 		"message": status,
 	})
 }
+
+func DeleteBook(ctx *gin.Context) {
+	bookID := ctx.Param("bookId")
+	stat, err := service.DeleteBook(bookID)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"error_status":  "Data not Found",
+			"error_message": err,
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": stat,
+	})
+}

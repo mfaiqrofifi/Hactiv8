@@ -4,10 +4,17 @@ import (
 	"Task_Microservice/domain"
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 func CreateBook(book domain.BookDomain) domain.BookDomain {
-	book.BookId = fmt.Sprintf("B%d", len(domain.Books)+1)
+	var dt string
+	val := 0
+	if len(domain.Books) != 0 {
+		dt = domain.Books[len(domain.Books)-1].BookId
+		val, _ = strconv.Atoi(string(dt[1]))
+	}
+	book.BookId = fmt.Sprintf("B%d", val+1)
 	domain.Books = append(domain.Books, book)
 	return book
 }
@@ -38,4 +45,22 @@ func UpdateBook(idBook string, data domain.BookDomain) (string, error) {
 		}
 	}
 	return "", errors.New("Can't find the data")
+}
+func DeleteBook(idBook string) (string, error) {
+	condition := false
+	var index int
+	for i, v := range domain.Books {
+		if v.BookId == idBook {
+			index = i
+			condition = true
+			break
+		}
+	}
+	if !condition {
+		return "", errors.New("Data not Found")
+	}
+	copy(domain.Books[index:], domain.Books[index+1:])
+	domain.Books[len(domain.Books)-1] = domain.BookDomain{}
+	domain.Books = domain.Books[:len(domain.Books)-1]
+	return "Book has been deleted", nil
 }
