@@ -62,5 +62,6 @@ func DeleteBook(idBook string) (string, error) {
 	copy(domain.Books[index:], domain.Books[index+1:])
 	domain.Books[len(domain.Books)-1] = domain.BookDomain{}
 	domain.Books = domain.Books[:len(domain.Books)-1]
-	return "Book has been deleted", nil
+	str := fmt.Sprintf("Books with id %s has been deleted", idBook)
+	return str, nil
 }

@@ -26,8 +26,8 @@ func GetBook(ctx *gin.Context) {
 	dataBook, err := service.GetDataBook(idBook)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-			"error_status":  err,
-			"error_message": fmt.Sprintf("data %s tidak ditemukan", idBook),
+			"error_status":  "Data not Found",
+			"error_message": fmt.Sprintf("data with id %s not found", idBook),
 		})
 		return
 	}
@@ -40,9 +40,8 @@ func GetBook(ctx *gin.Context) {
 func GetAllBook(ctx *gin.Context) {
 	dataBook, err := service.AllBook()
 	if err != nil {
-		ctx.AbortWithStatusJSON(http.StatusNoContent, gin.H{
-			"error_status":  err,
-			"error_message": "data kosong",
+		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"error_status": "Empthy list",
 		})
 		return
 	}
@@ -52,17 +51,17 @@ func GetAllBook(ctx *gin.Context) {
 }
 
 func UpdateBook(ctx *gin.Context) {
-	BookID := ctx.Param("bookID")
+	bookID := ctx.Param("bookID")
 	var dataBook domain.BookDomain
 	if errs := ctx.ShouldBindJSON(&dataBook); errs != nil {
 		ctx.AbortWithError(http.StatusBadRequest, errs)
 		return
 	}
-	status, err := service.UpdateBook(BookID, dataBook)
+	status, err := service.UpdateBook(bookID, dataBook)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"error_status":  "Data Not Found",
-			"error_message": err,
+			"error_message": fmt.Sprintf("Data with id %s not found", bookID),
 		})
 		return
 	}
@@ -77,7 +76,7 @@ func DeleteBook(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"error_status":  "Data not Found",
-			"error_message": err,
+			"error_message": fmt.Sprintf("Data with id %s not found", bookID),
 		})
 		return
 	}
