@@ -15,7 +15,7 @@ func Ok(c *gin.Context, data interface{}) {
 }
 
 func OkWithMessage(c *gin.Context, message interface{}) {
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": message})
+	c.JSON(http.StatusOK, gin.H{"message": message})
 }
 
 func NoContent(c *gin.Context) {

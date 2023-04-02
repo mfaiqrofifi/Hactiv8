@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"ShowCase/model"
+
 	// "ShowCase/repository/query"
+	"ShowCase/model"
 	"errors"
 	"fmt"
 )
@@ -30,10 +31,10 @@ func (r Repo) GetBookAll() (res []model.BookDomain, err error) {
 	if err != nil {
 		return res, err
 	}
-	if len(res) == 0 {
-		err = errors.New("kosong")
-		return res, err
-	}
+	// if len(res) == 0 {
+	// 	err = errors.New("kosong")
+	// 	return res, err
+	// }
 	// defer row.Close()
 	// for row.Next() {
 	// 	var book = model.BookDomain{}
@@ -59,27 +60,32 @@ func (r Repo) UpdateBook(in model.BookDomain) (res model.BookDomain, err error) 
 	// 	return "", err
 	// }
 	// count, err := res.RowsAffected()
-	err = r.gorm.Model(&res).Where("id=?", in.ID).Updates(model.BookDomain{
+	data := r.gorm.Model(&res).Where("id=?", in.ID).Updates(model.BookDomain{
 		Title:  in.Title,
 		Author: in.Author,
-	}).Scan(&res).Error
+	}).Scan(&res)
+	err = data.Error
 	if err != nil {
 		return res, err
+	}
+	if data.RowsAffected < 1 {
+		return res, errors.New("Not Found")
 	}
 	return res, err
 
 }
 func (r Repo) DeleteBook(id int) (msg string, err error) {
-	// res, err := r.db.Exec(query.DeleteBook, id)
-	// if err != nil {
-	// 	return "", err
-	// }
 
-	// count, err := res.RowsAffected()
 	book := model.BookDomain{}
-	err = r.gorm.Where("id=?", id).Delete(&book).Error
+	data := r.gorm.Where("id=?", id).Delete(&book)
+
+	fmt.Println(data.RowsAffected)
+	err = data.Error
 	if err != nil {
 		return "", err
+	}
+	if data.RowsAffected < 1 {
+		return "", errors.New("Not Found")
 	}
 	msg = fmt.Sprintf("Book deleted succesfully")
 	return msg, err

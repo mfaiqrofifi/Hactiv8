@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+)
 
 type BookDomain struct {
 	ID        int       `json:"id" gorm:"primaryKey;type:serial"`
@@ -9,4 +13,11 @@ type BookDomain struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	// Division  string `json:"division" db:"division"`
+}
+
+func (e BookDomain) Validation() error { // custom validation
+	return validation.ValidateStruct(&e,
+		validation.Field(&e.Title, validation.Required),
+		validation.Field(&e.Author, validation.Required),
+	)
 }

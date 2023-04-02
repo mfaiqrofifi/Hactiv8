@@ -3,6 +3,7 @@ package handler
 import (
 	"ShowCase/helper"
 	"ShowCase/model"
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,11 @@ import (
 func (h Handler) CreateBook(c *gin.Context) {
 	in := model.BookDomain{}
 	err := c.BindJSON(&in)
+	if err != nil {
+		helper.BadRequest(c, err.Error())
+		return
+	}
+	err = in.Validation()
 	if err != nil {
 		helper.BadRequest(c, err.Error())
 		return
@@ -28,6 +34,9 @@ func (h Handler) GetBook(c *gin.Context) {
 	if err != nil {
 		helper.InternalServer(c, err.Error())
 		return
+	}
+	if len(res) == 0 {
+		helper.NoContent(c)
 	}
 	helper.Ok(c, res)
 }
@@ -62,8 +71,15 @@ func (h Handler) UpdateBook(c *gin.Context) {
 		return
 	}
 	res, err := h.app.UpdateBook(in)
+	fmt.Println(err)
 	if err != nil {
-		helper.NotFound(c, err.Error())
+		if err.Error() == "Not Found" {
+			helper.NotFound(c, err.Error())
+			return
+		} else {
+			helper.InternalServer(c, err.Error())
+		}
+
 	}
 	helper.Ok(c, res)
 }
@@ -76,8 +92,14 @@ func (h Handler) DeleteBook(c *gin.Context) {
 		return
 	}
 	res, err := h.app.DeleteBook(dt)
+	fmt.Println(err)
 	if err != nil {
-		helper.NotFound(c, err.Error())
+		if err.Error() == "Not Found" {
+			helper.NotFound(c, err.Error())
+			return
+		} else {
+			helper.InternalServer(c, err.Error())
+		}
 	}
 	helper.OkWithMessage(c, res)
 }
